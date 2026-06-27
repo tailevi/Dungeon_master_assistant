@@ -14,4 +14,5 @@ data/store.db
 data/store.db-*
 data/memory/*.md
 !data/memory/.gitkeep
+outputs/*.html
 .DS_Store

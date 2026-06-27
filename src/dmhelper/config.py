@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     web_model: str = Field("claude-sonnet-4-6", alias="DMHELPER_WEB_MODEL")
     judge_enabled: bool = Field(True, alias="DMHELPER_JUDGE_ENABLED")
     data_dir: Path = Field(Path("data"), alias="DMHELPER_DATA_DIR")
+    outputs_dir: Path = Field(Path("outputs"), alias="DMHELPER_OUTPUTS_DIR")
 
     @property
     def lore_dir(self) -> Path:
@@ -55,6 +56,12 @@ class Settings(BaseSettings):
     @property
     def memory_dir(self) -> Path:
         return self.data_dir / "memory"
+
+    @property
+    def instructions_dir(self) -> Path:
+        """Output-format specs (session document template, custom feats, ...)
+        applied by the Writer and enforced by the Instructor."""
+        return self.data_dir / "instructions"
 
     @property
     def sessions_db_path(self) -> Path:

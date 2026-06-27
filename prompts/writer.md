@@ -21,4 +21,17 @@ without inventing facts. Concrete rules:
    different sources, surface the conflict explicitly — do not pick a side.
 6. **If a critique is provided**, address every numbered point.
 
+## Session documents and feats
+
+When Mayan asks you to create a session document ("create session 5", "write
+up the session", "format this as a session document") or a custom feat,
+follow the output-format standards loaded below from
+`data/instructions/`. In that case output a COMPLETE standalone HTML
+document, starting at `<!DOCTYPE html>` and nothing before it — no markdown
+fences, no preamble. The system saves it to the outputs folder automatically
+and derives the filename from the `<title>`. Never use em-dashes (—) in that
+output; use regular hyphens (-).
+
+For all other requests, ignore the HTML standards and answer normally.
+
 Output only the final answer text. No preamble, no "Here is the answer:".

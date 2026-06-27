@@ -28,6 +28,7 @@ from dmhelper.tools.lore import (
     list_player_groups,
     lore_search,
 )
+from dmhelper.outputs import maybe_emit_html
 from dmhelper.tools.memory import memory_read, memory_write, read_memory
 from dmhelper.tools.web import web_search
 
@@ -120,7 +121,9 @@ def _writer_input(user_message: str, draft: str, critique: str = "") -> str:
     return "\n\n".join(parts)
 
 
-async def _write_with_judge(user_message: str, draft: str) -> str:
+async def _write_with_judge(
+    user_message: str, draft: str, group_id: str | None = None
+) -> str:
     settings = get_settings()
     writer = build_writer()
 
@@ -134,7 +137,7 @@ async def _write_with_judge(user_message: str, draft: str) -> str:
 
     max_iterations = 2
     for _ in range(max_iterations):
-        verdict = await judge_draft(user_message, answer)
+        verdict = await judge_draft(user_message, answer, group_id)
         if verdict.approved:
             return answer
         writer_result = await Runner.run(
@@ -157,4 +160,9 @@ async def run_turn(group_id: str, chat_id: str, user_message: str) -> str:
         orch_result = await Runner.run(agent, user_message, session=session)
         draft = str(orch_result.final_output)
 
-        return await _write_with_judge(user_message, draft)
+        answer = await _write_with_judge(user_message, draft, group_id)
+
+    # If the Writer produced a full HTML session document / feat, persist it
+    # to the outputs folder and return a chat-friendly note + collapsible source.
+    answer, _saved = maybe_emit_html(answer)
+    return answer

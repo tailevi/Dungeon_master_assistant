@@ -6,14 +6,19 @@ from __future__ import annotations
 from agents import Agent
 from agents.extensions.models.litellm_model import LitellmModel
 
+from dmhelper.agents.format_standards import load_format_standards
 from dmhelper.config import Settings, get_settings
 
 
 def _load_prompt(settings: Settings) -> str:
     path = settings.prompts_dir / "writer.md"
-    if not path.exists():
-        return "You are the Writer."
-    return path.read_text(encoding="utf-8")
+    base = (
+        path.read_text(encoding="utf-8")
+        if path.exists()
+        else "You are the Writer."
+    )
+    standards = load_format_standards()
+    return f"{base}\n\n{standards}" if standards else base
 
 
 def build_writer() -> Agent:
