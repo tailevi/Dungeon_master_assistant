@@ -1,0 +1,17 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+data/sessions.db
+data/sessions.db-*
+data/store.db
+data/store.db-*
+data/memory/*.md
+!data/memory/.gitkeep
+.DS_Store
