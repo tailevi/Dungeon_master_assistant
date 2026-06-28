@@ -8,6 +8,8 @@ Single-user Dungeon Master assistant for Mayan. One Orchestrator agent + functio
 - **Player groups** — one backstory file per group in `data/lore/player groups/` (e.g. `Noir_ Players.md`). Read by `group_lore_search`.
 - **Exandria** — Critical Role setting. Pulled from the web via Anthropic's native `web_search`. Never mixed with Alaxya.
 
+For storytelling **voice** (not canon), `build_narration_guide` distils a narration style guide from a few Critical Role transcripts into `data/instructions/narration_style.md`. That guide then steers the Writer and is enforced by the Instructor when you write or finalize a story. It is a style example only — Exandria/CR facts are never imported into Alaxya.
+
 ## Stack
 
 - Python 3.11+, managed with [uv](https://docs.astral.sh/uv/)
@@ -44,6 +46,7 @@ flowchart TD
       KS["kanka_player_search → Kanka"]
       MRW["memory_read / memory_write"]
       PC["propose_changeset<br/>→ data/store.db (pending, no write)"]
+      NG["build_narration_guide → Critical Role<br/>→ data/instructions/narration_style.md"]
     end
 
     TOOLS --> ORC
@@ -135,13 +138,16 @@ src/dmhelper/
         kanka_search.py        # kanka_player_search
         kanka_write.py         # propose_changeset + apply_pending (book keeper)
         memory.py              # memory_read / memory_write
-    clients/kanka.py           # async httpx + tenacity
+        narration.py           # build_narration_guide (Critical Role style)
+    clients/
+        kanka.py               # async httpx + tenacity
+        criticalrole.py        # fandom MediaWiki transcript fetch
     store/db.py                # pending_changes + kanka_id_map (SQLite)
 data/
     lore/alaxya/               # Alaxya world lore (frontmatter category/world)
     lore/player groups/        # one backstory file per group
     memory/                    # rolling memory_<group>.md (book keeper)
-    instructions/              # Session_Tempalte.md + future format specs
+    instructions/              # Session_Tempalte.md, narration_style.md, specs
 prompts/
     orchestrator.md  writer.md  instructor.md  instructions.md
 outputs/                       # generated session-document .html (gitignored)
@@ -161,6 +167,9 @@ tests/
 | `DMHELPER_WRITER_MODEL`        | `anthropic/claude-opus-4-8`   | LiteLLM model string for the Writer.                         |
 | `DMHELPER_JUDGE_MODEL`         | `anthropic/claude-sonnet-4-6` | LiteLLM model string for the Instructor judge.               |
 | `DMHELPER_WEB_MODEL`           | `claude-sonnet-4-6`           | Native Anthropic model id for `web_search`.                  |
+| `DMHELPER_NARRATION_MODEL`     | `claude-opus-4-8`             | Native Anthropic model id for distilling the narration guide. |
+| `DMHELPER_NARRATION_SAMPLE`    | `3`                           | How many CR transcripts to sample per guide build.           |
+| `DMHELPER_NARRATION_EXCERPT_CHARS` | `6000`                    | Per-transcript excerpt length fed to the distiller.          |
 | `DMHELPER_JUDGE_ENABLED`       | `true`                        | Set `false` to skip the judge loop.                          |
 | `DMHELPER_DATA_DIR`            | `data`                        | Base dir for lore, memory, instructions, SQLite stores.      |
 | `DMHELPER_OUTPUTS_DIR`         | `outputs`                     | Where generated HTML session documents are saved.            |

@@ -21,16 +21,22 @@ from dmhelper.config import get_settings
 _HEADER = """\
 ## Output-format standards (CONDITIONAL — apply only when relevant)
 
-The standards below define how to format specific artifacts: session
-documents and custom feats. Apply a standard ONLY when Mayan is asking for
-that artifact (e.g. "create session 5", "write up the session", "make a
-feat"). For ordinary questions, lore lookups, planning, and conversation,
-IGNORE these standards and respond normally — do not wrap normal answers in
-HTML, and do not penalise a normal answer for not following them.
+The standards below define how to handle specific artifacts: session
+documents, custom feats, and story narration / finalizing a story. Apply a
+standard ONLY when Mayan is asking for that artifact (e.g. "create session 5",
+"write up the session", "make a feat", "write/finalize the story"). For
+ordinary questions, lore lookups, planning, and conversation, IGNORE these
+standards and respond normally — do not wrap normal answers in HTML, do not
+apply narration styling to a factual answer, and do not penalise a normal
+answer for not following them.
 
 When producing a session document or feat, output a COMPLETE standalone
 HTML document beginning with `<!DOCTYPE html>` exactly as the template
-specifies; it will be saved to the outputs folder automatically.
+specifies; it will be saved to the outputs folder automatically. When writing
+or finalizing story prose, narrate with Matt Mercer's cadence, storytelling
+drive, and distinct NPC dialogue, following the narration style guide (if
+present) — but never import Exandria / Critical Role canon, names, or places
+into the homebrew world Alaxya.
 """
 
 

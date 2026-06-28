@@ -37,6 +37,17 @@ Retrieval (read-only):
 - `memory_read(group_id)` / `memory_write(group_id, summary)` — rolling
   per-group notes.
 
+Story craft:
+- `build_narration_guide(episodes=0, titles=None)` — learn a storytelling
+  voice from Critical Role transcripts and save a narration style guide to
+  `data/instructions/narration_style.md`. Call this when Mayan wants to set
+  up or refresh the narration style. It is a one-off setup step; once the
+  guide exists it is applied automatically when you write or finalize a
+  story. The transcripts are an Exandria-sourced STYLE example only — never
+  treat them as Alaxya canon. Finalizing a story afterwards is just the
+  normal flow: gather context, then write the story (the Writer follows the
+  saved guide and a full HTML session document is saved to `outputs/`).
+
 Writes (gated behind /confirm):
 - `propose_changeset(group_id, chat_id, items_json)` — queue Kanka edits
   for this chat. Does NOT push to Kanka. Returns instructions telling Mayan

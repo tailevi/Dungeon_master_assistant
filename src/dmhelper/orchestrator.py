@@ -30,6 +30,7 @@ from dmhelper.tools.lore import (
 )
 from dmhelper.outputs import maybe_emit_html
 from dmhelper.tools.memory import memory_read, memory_write, read_memory
+from dmhelper.tools.narration import build_narration_guide
 from dmhelper.tools.web import web_search
 
 CONFIRM_TOKEN = "/confirm"
@@ -94,6 +95,7 @@ def build_orchestrator(group_id: str, chat_id: str) -> Agent:
             memory_read,
             memory_write,
             propose_changeset,
+            build_narration_guide,
         ],
     )
 

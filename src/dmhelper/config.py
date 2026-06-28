@@ -35,6 +35,15 @@ class Settings(BaseSettings):
         "anthropic/claude-sonnet-4-6", alias="DMHELPER_JUDGE_MODEL"
     )
     web_model: str = Field("claude-sonnet-4-6", alias="DMHELPER_WEB_MODEL")
+    # Native Anthropic model id (like web_model) for distilling the narration
+    # style guide from Critical Role transcripts.
+    narration_model: str = Field(
+        "claude-opus-4-8", alias="DMHELPER_NARRATION_MODEL"
+    )
+    narration_sample: int = Field(3, alias="DMHELPER_NARRATION_SAMPLE")
+    narration_excerpt_chars: int = Field(
+        6000, alias="DMHELPER_NARRATION_EXCERPT_CHARS"
+    )
     judge_enabled: bool = Field(True, alias="DMHELPER_JUDGE_ENABLED")
     data_dir: Path = Field(Path("data"), alias="DMHELPER_DATA_DIR")
     outputs_dir: Path = Field(Path("outputs"), alias="DMHELPER_OUTPUTS_DIR")
