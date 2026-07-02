@@ -20,6 +20,7 @@ from agents.extensions.models.litellm_model import LitellmModel
 from dmhelper.agents.instructor import judge_draft
 from dmhelper.agents.writer import build_writer
 from dmhelper.config import Settings, get_settings
+from dmhelper.errors import friendly_error
 from dmhelper.tools.kanka_search import kanka_player_search
 from dmhelper.tools.kanka_write import apply_pending, propose_changeset
 from dmhelper.tools.lore import (
@@ -150,6 +151,13 @@ async def _write_with_judge(
 
 
 async def run_turn(group_id: str, chat_id: str, user_message: str) -> str:
+    try:
+        return await _run_turn(group_id, chat_id, user_message)
+    except Exception as e:  # noqa: BLE001 - surface a clean message to the DM
+        return friendly_error(e)
+
+
+async def _run_turn(group_id: str, chat_id: str, user_message: str) -> str:
     if user_message.strip().lower() == CONFIRM_TOKEN:
         return await apply_pending(group_id, chat_id)
 

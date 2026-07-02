@@ -78,3 +78,61 @@ def test_append_group_entry_creates_file_when_missing() -> None:
     out = lore.append_group_entry("Brand New Group", "Thing", "body")
     assert out.exists()
     assert out.name == "Brand New Group_ Players.md"
+
+
+def test_lore_search_finds_cross_world_section() -> None:
+    s = get_settings()
+    _write(
+        s.alexya_lore_dir / "HISTORY OF ALAXYA.md",
+        "# History\n\n## The Rift\nRoutine backstory.\n\n"
+        "## Planned Invasion\nAlaxya prepares an invasion of Exandria "
+        "through the rift.\n",
+    )
+    # a group file also under data/lore -> must be searchable too
+    _write(
+        s.group_lore_dir / "The Wolf Pack_ Players.md",
+        "# Wolf Pack\n\n## Echo\nCursed by the hag.\n",
+    )
+
+    out = lore.lore_search_impl("invasion of Exandria")
+    assert "Planned Invasion" in out
+    assert "invasion of Exandria" in out
+    # citation points at the file + heading
+    assert "HISTORY OF ALAXYA.md" in out
+
+
+def test_lore_search_returns_sections_not_whole_huge_file() -> None:
+    s = get_settings()
+    big = "# Deities\n\n" + "".join(
+        f"## Deity {i}\n" + ("filler word " * 200) + "\n\n" for i in range(200)
+    )
+    # inject one relevant section
+    big += "## Bwonsamdi\nGod of death, deal-maker, loa.\n"
+    _write(s.alexya_lore_dir / "Deities.md", big)
+
+    out = lore.lore_search_impl("Bwonsamdi deal-maker")
+    assert "Bwonsamdi" in out
+    # section-scoped: far smaller than the whole multi-section file
+    assert len(out) < len(big)
+
+
+def test_lore_search_reports_no_match_not_empty() -> None:
+    s = get_settings()
+    _write(s.alexya_lore_dir / "Deities.md", "# Deities\n\nBahamut.\n")
+    out = lore.lore_search_impl("zzzznonexistentkeyword")
+    assert "No lore section matched" in out
+    assert "empty" not in out.lower()
+
+
+def test_lore_search_ignores_embedded_base64() -> None:
+    s = get_settings()
+    blob = "Q" * 6000
+    _write(
+        s.alexya_lore_dir / "Deities.md",
+        f"# Deities\n\n## Bahamut\nThe platinum dragon.\n\n"
+        f"[image1]: <data:image/png;base64,{blob}>\n",
+    )
+    out = lore.lore_search_impl("Bahamut platinum dragon")
+    assert "platinum dragon" in out
+    # the base64 blob must never leak into the returned context
+    assert "base64" not in out and blob not in out
